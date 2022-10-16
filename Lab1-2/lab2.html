@@ -1,0 +1,298 @@
+<!-- CSE 5542 Lab1 -->
+<!-- Hongda Lin (lin.3235@osu.edu) -->
+<!-- Formatting plugin: Prettier -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <script type="text/javascript" src="d3/d3.min.js"></script>  -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <style></style>
+  </head>
+
+  <body>
+    <svg width="2000" height="2000"></svg>
+
+    <script type="text/javascript">
+      var svg = d3.select("svg");
+
+      d3.csv("bar chart.csv", drawBarChart);
+      d3.csv("line graph.csv", drawLineGraph);
+      d3.csv("histogram.csv", drawHistogram);
+      d3.csv("pie chart.csv", drawPieChart);
+
+      function drawBarChart(error, data) {
+        var padding = 10;
+        var barWidth = 40;
+        var g = svg
+          .append("g")
+          .attr("id", "bar_chart")
+          .attr("transform", "translate(100, 160)");
+
+        // var cityNames = data.map((d) => d.cityName);
+        // var xScale = d3.scaleLinear().range([0, 400]);
+        // var xAxis = d3
+        //   .axisBottom(xScale)
+        //   .ticks(5)
+        //   .tickFormat(function (d, i) {
+        //     return cityNames[i];
+        //   });
+        // g.append("g")
+        //   .attr("class", "x_coordinate")
+        //   .attr("transform", "translate(100,150)")
+        //   .call(xAxis)
+        //   .selectAll(".tick text")
+        //   .style("text-anchor", "middle")
+        //   .attr("x", (d, i) => {
+        //     return i + 80;
+        //   });
+
+        var texts = g
+          .selectAll(null)
+          .data(data)
+          .enter()
+          .append("text")
+          .attr("x", (d, i) => {
+            return i * (barWidth + padding);
+          })
+          .attr("y", 165)
+          .attr("dx", "1.6em")
+          .attr("text-anchor", "middle")
+          .attr("font-size", 12)
+          .text((d) => {
+            return d.cityName;
+          });
+
+        var rects = g
+          .selectAll("rect")
+          .data(data)
+          .enter()
+          .append("rect")
+          .attr("x", (d, i) => {
+            return i * (barWidth + padding);
+          })
+          .attr("y", (d, i) => {
+            return (150 - (d.population / (1.2 * 10e6)) * 250).toFixed(3);
+          })
+          .attr("width", barWidth)
+          .attr("height", (d, i) => {
+            return ((d.population / (1.2 * 10e6)) * 250).toFixed(3);
+          })
+          .style("fill", "#4781B4");
+
+        var yScale = d3
+          .scaleLinear()
+          .domain([0, 1.2 * 10e6])
+          .range([150, -100]);
+        var yAxis = d3.axisLeft(yScale).ticks(6);
+
+        g.append("g").attr("class", "y_coordinate").call(yAxis);
+      }
+
+      function drawLineGraph(error, data) {
+        var parseTime = d3.timeParse("%d-%b-%y");
+        var g = svg
+          .append("g")
+          .attr("id", "line_graph")
+          .attr("transform", "translate(600, 160)");
+
+        var xScale = d3
+          .scaleTime()
+          .domain(
+            d3.extent(data, (d) => {
+              return parseTime(d.date);
+            })
+          )
+          .rangeRound([0, 460]);
+
+        var yScale = d3
+          .scaleLinear()
+          .domain(
+            d3.extent(data, (d) => {
+              return d.value;
+            })
+          )
+          .rangeRound([150, -100]);
+
+        g.append("g")
+          .attr("class", "x_coordinate")
+          .attr("transform", "translate(0, 150)")
+          .call(d3.axisBottom(xScale).ticks(d3.timeDay.every(1)));
+
+        g.append("g")
+          .attr("class", "y_coordinate")
+          .call(d3.axisLeft(yScale))
+          .append("text")
+          .attr("fill", "black")
+          .attr("transform", "rotate(-90)")
+          .attr("x", 100)
+          .attr("y", 10)
+          .attr("dy", "0.7em")
+          .attr("text-anchor", "right")
+          .text("Price ($)");
+
+        var lineGenerator = d3
+          .line()
+          .x((d) => {
+            return xScale(parseTime(d.date));
+          })
+          .y((d) => {
+            return yScale(d.value);
+          });
+
+        var symbolGenerator = d3.symbol().size(200).type(d3.symbolCircle);
+
+        g.append("path")
+          .attr("class", "line_path")
+          .attr("fill", "none")
+          .attr("stroke", "steelblue")
+          .attr("stroke-width", 2)
+          .attr("d", lineGenerator(data));
+
+        g.selectAll(null)
+          .data(data)
+          .enter()
+          .append("path")
+          .attr("class", "symbol")
+          .attr("fill", "steelblue")
+          .attr("stroke", "blue")
+          .attr("stroke-width", 2)
+          .attr("d", symbolGenerator())
+          .attr("transform", (d) => {
+            return (
+              "translate(" +
+              xScale(parseTime(d.date)) +
+              "," +
+              yScale(d.value) +
+              ")"
+            );
+          });
+
+        //   g.selectAll("line_path")
+        //   .data(data)
+        //   .enter()
+        //   .append("circle")
+        //   .attr("fill", "steelblue")
+        //   .attr("stroke", "blue")
+        //   .attr("stroke-width", 2)
+        //   .attr("cx", (d, i) => {
+        //     return xScale(parseTime(d.Date));
+        //   })
+        //   .attr("cy", (d) => {
+        //     return yScale(d.Value);
+        //   })
+        //   .attr("r", 4);
+      }
+
+      function drawHistogram(error, data) {
+        var g = svg
+          .append("g")
+          .attr("id", "histogram")
+          .attr("transform", "translate(100, 650)");
+
+        var range = d3.range(-4, 3, 1);
+        var samples = data.map((d) => +d.sample);
+        var randomNumber = (min, max) => {
+          return Math.random() * (max - min) + min;
+        };
+
+        var sampleData = [];
+        samples.map((d, index) => {
+          var tempData = d3
+            .range(d)
+            .map((i) => randomNumber(-4 + index, -3 + index));
+          sampleData = sampleData.concat(tempData);
+        });
+
+        var dataExtent = d3.extent(range);
+        var binsGenerator = d3.histogram().domain(dataExtent).thresholds(5);
+        var binsData = binsGenerator(sampleData);
+
+        var maxNumber = d3.max(binsData, (d) => d.length);
+        var bars = g
+          .selectAll(".bar")
+          .data(binsData)
+          .enter()
+          .append("g")
+          .attr("class", "bar")
+          .attr("transform", (d, i) => {
+            return "translate(0," + (i * 50 - 200) + ")";
+          });
+
+        bars
+          .append("rect")
+          .attr("y", 0.5)
+          .attr("width", (d) => {
+            return d.length;
+          })
+          .attr("height", 50)
+          .attr("fill", "#4781B4")
+		  .attr("stroke", "white")
+          .attr("stroke-width", 0.1);
+
+        var xAxis = d3
+          .scaleLinear()
+          .domain(d3.extent(data.map((d) => d.sample)))
+          .rangeRound([0, 400]);
+        g.append("g")
+          .attr("class", "x_coordinate")
+          .attr("transform", "translate(0, 100)")
+          .call(d3.axisBottom(xAxis));
+
+        var yScale = d3.scaleLinear().domain([2, -4]).range([100, -200]);
+        var yAxis = d3.axisLeft(yScale).ticks(6);
+
+        g.append("g").attr("class", "y_coordinate").call(yAxis);
+      }
+
+      function drawPieChart(error, data) {
+        var g = svg
+          .append("g")
+          .attr("id", "pie_chart")
+          .attr("transform", "translate(800, 600)");
+        var pieGenerator = d3
+          .pie()
+          .value((d) => {
+            return d.quantity;
+          })
+          .sort((a, b) => {
+            return a.name;
+          });
+        var arcData = pieGenerator(data);
+        var arcGenerator = d3.arc().innerRadius(30).outerRadius(180);
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+        g.selectAll("path")
+          .data(arcData)
+          .enter()
+          .append("path")
+          .attr("d", arcGenerator)
+          .attr("class", "arc")
+          .style("fill", (d, i) => {
+            return color(i);
+          })
+          .attr("stroke", "white")
+          .attr("stroke-width", 2);
+
+        g.selectAll(null)
+          .data(arcData)
+          .enter()
+          .append("text")
+          .attr("text-anchor", "middle")
+          .attr("transform", (d) => {
+            return "translate(" + arcGenerator.centroid(d) + ")";
+          })
+          .attr("dy", ".35em")
+          .style("fill", "white")
+          .style("font-size", 20)
+          .text("");
+
+        g.selectAll("text")
+          .data(data)
+          .text((d) => {
+            return d.name;
+          });
+      }
+    </script>
+  </body>
+</html>

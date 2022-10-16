@@ -1,0 +1,554 @@
+<!-- CSE 5542 Lab2 -->
+<!-- Hongda Lin (lin.3235@osu.edu) -->
+<!-- Formatting plugin: Prettier -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <script type="text/javascript" src="d3/d3.min.js"></script>  -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <style></style>
+  </head>
+
+  <body>
+    <svg width="2000" height="2000"></svg>
+
+    <script type="text/javascript">
+      var svg = d3.select("svg");
+      var total_energy_data;
+
+      d3.csv("ohio_electric_df.csv", drawStackedBarChart);
+      d3.csv("ohio_total_df.csv", drawLineGraph);
+      d3.csv("ohio_producer_df.csv", drawPieChart);
+      d3.csv("price_ma_dfs.csv", drawLineChart);
+      d3.csv("price_dfs.csv", drawScatterPlot);
+
+      function drawStackedBarChart(data) {
+        var g = svg
+          .append("g")
+          .attr("id", "stacked_bar_chart")
+          .attr("transform", "translate(100, 200)");
+
+        var width = 500,
+          height = 400;
+
+        var years = d3
+          .map(data, (d) => {
+            return d.YEAR;
+          })
+          .keys();
+
+        var sources = d3
+          .map(data, (d) => {
+            return d["ENERGY SOURCE"];
+          })
+          .keys();
+
+        var color = d3
+          .scaleOrdinal()
+          .domain(sources)
+          .range(["#1C9D78", "#DA6003", "#7671B3"]);
+
+        var electric_datas = [];
+        data.map((d) => {
+          var attr = d["ENERGY SOURCE"];
+          var val = d["GENERATION"];
+          if (electric_datas.find((data) => data.YEAR === d.YEAR)) {
+            electric_datas.find((data) => data.YEAR === d.YEAR)[attr] = val;
+          } else {
+            var data = { YEAR: d.YEAR };
+            data[attr] = val;
+            electric_datas.push(data);
+          }
+        });
+
+        // Add X axis
+        var x = d3.scaleBand().domain(years).range([0, width]).padding([0.5]);
+        var xAxis = d3.axisBottom(x);
+        g.append("g")
+          .attr("class", "x_coordinate")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+        // Add Y axis
+        var y = d3
+          .scaleLinear()
+          .domain([0, 1.5 * 10e7])
+          .range([height, 0]);
+        // Note: For ticks(), the labels on the axis must be a multiple of 2, 5, or 10
+        var yAxis = d3.axisLeft(y).tickValues(
+          Array(6)
+            .fill(0)
+            .map((n, i) => n + 0.3 * 10e7 * i)
+        );
+        g.append("g")
+          .attr("class", "y_coordinate")
+          .call(yAxis)
+          .append("text")
+          .attr("fill", "black")
+          .attr("x", 50)
+          .attr("y", -20)
+          .text("Generation (Megawatthours)");
+
+        var stackGen = d3.stack().keys(sources);
+        var stack = stackGen(electric_datas);
+
+        g.append("g")
+          .attr("class", "stack_bars")
+          .selectAll("g")
+          .data(stack)
+          .enter()
+          .append("g")
+          .attr("class", "bars")
+          .attr("fill", (d) => {
+            return color(d.key);
+          })
+          .selectAll("rect")
+          .data((d) => d)
+          .enter()
+          .append("rect")
+          .attr("x", (d) => {
+            return x(d.data.YEAR);
+          })
+          .attr("y", (d) => {
+            return y(d[1]);
+          })
+          .attr("height", (d) => {
+            return y(d[0]) - y(d[1]);
+          })
+          .attr("width", x.bandwidth());
+
+        var legends = g
+          .append("g")
+          .attr("class", "legends_stackedbar_line_chart")
+          .selectAll(".legend")
+          .data(sources)
+          .enter()
+          .append("g")
+          .attr("class", "legend")
+          .attr("transform", function (d, i) {
+            return "translate(" + width + "," + i * 25 + ")";
+          });
+
+        legends
+          .append("circle")
+          .data(stack)
+          .attr("stroke-width", 2)
+          .attr("fill", (d) => {
+            return color(d.key);
+          })
+          .attr("r", 8);
+
+        legends
+          .append("text")
+          .data(sources)
+          .attr("x", 30)
+          .attr("y", 0)
+          .attr("dy", ".35em")
+          .style("text-anchor", "start")
+          .text(function (d) {
+            return d;
+          });
+
+        var legend = svg
+          .select(".legends_stackedbar_line_chart")
+          .append("g")
+          .attr("class", "legend")
+          .attr("transform", function (d, i) {
+            return "translate(" + width + ", 75)";
+          });
+
+        legend
+          .append("line")
+          .attr("stroke", "steelblue")
+          .attr("stroke-width", 2)
+          .attr("x1", -8)
+          .attr("y1", 0)
+          .attr("x2", 8)
+          .attr("y2", 0);
+
+        legend
+          .append("text")
+          .attr("x", 30)
+          .attr("y", 0)
+          .attr("dy", ".35em")
+          .text("Total Generation");
+      }
+
+      function drawLineGraph(data) {
+        var g = svg
+          .append("g")
+          .attr("id", "line_graph")
+          .attr("transform", "translate(100, 200)");
+
+        var width = 500,
+          height = 400;
+
+        var years = d3
+          .map(data, (d) => {
+            return d.YEAR;
+          })
+          .keys();
+
+        var x = d3.scaleBand().domain(years).range([0, width]).padding([0.5]);
+        var y = d3
+          .scaleLinear()
+          .domain([0, 1.5 * 10e7])
+          .range([height, 0]);
+
+        // For line graph
+        var lineGenerator = d3
+          .line()
+          .x((d) => {
+            return x(d.YEAR) + x.bandwidth() / 2;
+          })
+          .y((d) => {
+            return y(d["TOTAL_GENERATION"]);
+          });
+
+        g.append("g")
+          .attr("class", "path")
+          .append("path")
+          .attr("fill", "none")
+          .attr("stroke", "steelblue")
+          .attr("stroke-width", 2)
+          .attr("d", lineGenerator(data));
+      }
+
+      function drawPieChart(data) {
+        var g = svg
+          .append("g")
+          .attr("id", "pie_chart")
+          .attr("transform", "translate(1200, 300)");
+        // Pie chart
+        var pieGenerator = d3
+          .pie()
+          .value((d) => {
+            return d.GENERATION;
+          })
+          .sort(null);
+        var arcData = pieGenerator(data);
+        var arcGenerator = d3.arc().innerRadius(50).outerRadius(180);
+        var color = ["#7BCC78", "#C2B0D9", "#FEBC80", "#FEFB99", "#396DB0"];
+        g.selectAll("path")
+          .data(arcData)
+          .enter()
+          .append("path")
+          .attr("d", arcGenerator)
+          .attr("class", "arc")
+          .style("fill", (d, i) => {
+            return color[i];
+          })
+          .attr("stroke", "white")
+          .attr("stroke-width", 0);
+
+        var sum = d3.sum(data, (d) => {
+          return +d.GENERATION;
+        });
+        var formatter = d3.format(".2%");
+
+        // Legend
+        var legends = g
+          .append("g")
+          .attr("class", "legends_pie_chart")
+          .selectAll(".legend")
+          .data(data)
+          .enter()
+          .append("g")
+          .attr("class", "legend")
+          .attr("transform", function (d, i) {
+            return "translate(-200, " + (i * 30 + 230) + ")";
+          });
+
+        legends
+          .append("circle")
+          .attr("stroke-width", 2)
+          .attr("fill", (d, i) => {
+            return color[i];
+          })
+          .attr("r", 10);
+
+        legends
+          .append("text")
+          .attr("x", 30)
+          .attr("y", 0)
+          .attr("dy", ".35em")
+          .text(function (d) {
+            return d["TYPE OF PRODUCER"] + " " + formatter(d.GENERATION / sum);
+          });
+      }
+
+      function drawLineChart(data) {
+        var g = svg
+          .append("g")
+          .attr("id", "line_chart")
+          .attr("transform", "translate(100, 800)");
+
+        var width = 500,
+          height = 400;
+
+        var parseTime = d3.timeParse("%Y-%m-%d");
+
+        var shortDateToISODate = (d) => {
+          const [month, date, year] = d.split("/");
+          const isoStr = `${year}-${month.toString().padStart(2, "0")}-${date
+            .toString()
+            .padStart(2, "0")}`;
+          return isoStr;
+        };
+
+        // Modify data (ref: https://bl.ocks.org/mbostock/3884955)
+        var ma_datas = data.columns.slice(1).map(function (ma) {
+          return {
+            Company_MA: ma,
+            Values: data.map(function (d) {
+              return { Date: shortDateToISODate(d.Date), Self_MA: d[ma] };
+            }),
+          };
+        });
+
+        var dates = d3
+          .map(data, (d) => {
+            return shortDateToISODate(d.Date);
+          })
+          .keys();
+
+        var companies = ma_datas.map(function (d) {
+          return d.Company_MA;
+        });
+
+        // Add X axis
+        var x = d3
+          .scaleTime()
+          .domain(
+            d3.extent(dates, (d) => {
+              return parseTime(d);
+            })
+          )
+          .range([0, width]);
+
+        var xAxis = d3.axisBottom(x);
+
+        // %B is March, %b is Mar
+        g.append("g")
+          .attr("class", "x_coordinate")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis.tickFormat(d3.timeFormat("%B")));
+
+        // min max
+        // var [min, max] = [
+        //   d3.min(ma_datas, function (c) {
+        //     return d3.min(c.Values, function (d) {
+        //       return +d.Self_MA;
+        //     });
+        //   }),
+        //   d3.max(ma_datas, function (c) {
+        //     return d3.max(c.Values, function (d) {
+        //       return +d.Self_MA;
+        //     });
+        //   }),
+        // ];
+
+        // Add Y axis
+        var y = d3.scaleLinear().domain([80, 350]).range([height, 0]);
+        var yAxis = d3.axisLeft(y).ticks(14);
+        g.append("g")
+          .attr("class", "y_coordinate")
+          .call(yAxis)
+          .append("text")
+          .attr("fill", "black")
+          .attr("x", 20)
+          .attr("y", -10)
+          .text("Price($)");
+
+        var color = d3
+          .scaleOrdinal()
+          .domain(companies)
+          .range(["#2276B4", "#2CA32B", "#B6393B", "#F7801D"]);
+
+        var lineGenerator = d3
+          .line()
+          .x(function (d) {
+            return x(parseTime(d.Date));
+          })
+          .y(function (d) {
+            return y(+d.Self_MA);
+          });
+
+        g.selectAll(".line")
+          .data(ma_datas)
+          .enter()
+          .append("path")
+          .attr("fill", "none")
+          .attr("stroke", function (d) {
+            return color(d.Company_MA);
+          })
+          .attr("stroke-width", 2)
+          .attr("d", function (d) {
+            return lineGenerator(d.Values);
+          });
+
+        // For legend
+        var legends = g
+          .append("g")
+          .attr("class", "legends_line_chart")
+          .selectAll(".legend")
+          .data(companies)
+          .enter()
+          .append("g")
+          .attr("class", "legend")
+          .attr("transform", function (d, i) {
+            return "translate(" + (width - 50) + "," + i * 25 + ")";
+          });
+
+        legends
+          .append("circle")
+          .data(ma_datas)
+          .attr("stroke-width", 2)
+          .attr("fill", (d) => {
+            return color(d.Company_MA);
+          })
+          .attr("r", 8);
+
+        legends
+          .append("text")
+          .data(companies)
+          .attr("x", 30)
+          .attr("y", 0)
+          .attr("dy", ".35em")
+          .text(function (d) {
+            return d.split("_")[0];
+          });
+      }
+
+      function drawScatterPlot(data) {
+        var g = svg
+          .append("g")
+          .attr("id", "scatter_plot")
+          .attr("transform", "translate(1000, 800)");
+
+        var width = 500,
+          height = 400;
+
+        var companies = data.columns.slice(2);
+
+        var price_datas = [];
+
+        data.map((d) => {
+          var ndx = d.NDX_price.replaceAll(",", "");
+          const [aapl, googl, meta, amzn] = [
+            d.AAPL_price,
+            d.GOOGL_price,
+            d.META_price,
+            d.AMZN_price,
+          ];
+          price_datas.push({
+            Company: companies[0],
+            NDX_Price: ndx,
+            Company_Price: aapl,
+          });
+          price_datas.push({
+            Company: companies[1],
+            NDX_Price: ndx,
+            Company_Price: googl,
+          });
+          price_datas.push({
+            Company: companies[2],
+            NDX_Price: ndx,
+            Company_Price: meta,
+          });
+          price_datas.push({
+            Company: companies[3],
+            NDX_Price: ndx,
+            Company_Price: amzn,
+          });
+        });
+
+        // Add X axis
+        var x = d3.scaleLinear().domain([1.05e4, 1.75e4]).range([0, width]);
+
+        var xAxis = d3.axisBottom(x).tickValues(
+          Array(13)
+            .fill(1.1e4)
+            .map((n, i) => n + 0.5e3 * i)
+        );
+
+        g.append("g")
+          .attr("class", "x_coordinate")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis)
+          .append("text")
+          .attr("fill", "black")
+          .attr("x", width)
+          .attr("y", 30)
+          .text("Nasdap 100 Price($)");
+
+        // Add Y axis
+        var y = d3.scaleLinear().domain([80, 350]).range([height, 0]);
+        var yAxis = d3.axisLeft(y).ticks(14);
+        g.append("g")
+          .attr("class", "y_coordinate")
+          .call(yAxis)
+          .append("text")
+          .attr("fill", "black")
+          .attr("x", 20)
+          .attr("y", -10)
+          .text("Price($)");
+
+        var color = d3
+          .scaleOrdinal()
+          .domain(companies)
+          .range(["#2276B4", "#2CA32B", "#B6393B", "#F7801D"]);
+
+        g.append("g")
+          .selectAll("dot")
+          .data(price_datas)
+          .enter()
+          .append("circle")
+          .attr("cx", function (d) {
+            return x(d.NDX_Price);
+          })
+          .attr("cy", function (d) {
+            return y(d.Company_Price);
+          })
+          .attr("r", 2)
+          .style("fill", function (d) {
+            return color(color(d.Company));
+          });
+
+        // For legend
+        var legends = g
+          .append("g")
+          .attr("class", "legends_line_chart")
+          .selectAll(".legend")
+          .data(companies)
+          .enter()
+          .append("g")
+          .attr("class", "legend")
+          .attr("transform", function (d, i) {
+            return "translate(50, " + i * 25 + ")";
+          });
+
+        legends
+          .append("circle")
+          .data(companies)
+          .attr("stroke-width", 2)
+          .attr("fill", (d) => {
+            return color(d);
+          })
+          .attr("r", 8);
+
+        legends
+          .append("text")
+          .data(companies)
+          .attr("x", 30)
+          .attr("y", 0)
+          .attr("dy", ".35em")
+          .text(function (d) {
+            return d.split("_")[0];
+          });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,290 @@
+<!-- CSE 5542 Lab1 -->
+<!-- Hongda Lin (lin.3235@osu.edu) -->
+<!-- Formatting plugin: Prettier -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .small {
+        font: 12px sans-serif;
+      }
+      .middle {
+        font: 16px sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="2000" height="2000" xmlns="http://www.w3.org/2000/svg">
+      <!-- Bar Chart -->
+      <g id="bar_chart" transform="translate(0, 160)">
+        <g class="bars">
+          <text x="20" y="20">London</text>
+          <!-- 8674000 / 12000000 * 450 (rest...) -->
+          <rect width="325" height="20" x="100" y="5" fill="#4781B4" />
+          <text x="20" y="50">New York</text>
+          <rect width="315" height="20" x="100" y="35" fill="#4781B4" />
+          <text x="20" y="80">Sydney</text>
+          <rect width="160" height="20" x="100" y="65" fill="#4781B4" />
+          <text x="20" y="110">Paris</text>
+          <rect width="84" height="20" x="100" y="95" fill="#4781B4" />
+          <text x="20" y="140">Beijing</text>
+          <rect width="431" height="20" x="100" y="125" fill="#4781B4" />
+        </g>
+        <!-- horizontal length: 450 -->
+        <g class="coordinate">
+          <line x1="100" y1="150" x2="550" y2="150" stroke="black" />
+          <g class="markers">
+            <line x1="100" y1="150" x2="100" y2="160" stroke="black" />
+            <text x="96" y="175">0</text>
+            <line x1="175" y1="150" x2="175" y2="160" stroke="black" />
+            <text x="140" y="175">2,000,000</text>
+            <line x1="250" y1="150" x2="250" y2="160" stroke="black" />
+            <text x="215" y="175">4,000,000</text>
+            <line x1="325" y1="150" x2="325" y2="160" stroke="black" />
+            <text x="290" y="175">6,000,000</text>
+            <line x1="400" y1="150" x2="400" y2="160" stroke="black" />
+            <text x="365" y="175">8,000,000</text>
+            <line x1="475" y1="150" x2="475" y2="160" stroke="black" />
+            <text x="440" y="175">10,000,000</text>
+            <line x1="550" y1="150" x2="550" y2="160" stroke="black" />
+            <text x="515" y="175">12,000,000</text>
+          </g>
+        </g>
+      </g>
+      <!-- Line Graph -->
+      <g id="line_graph" transform="translate(800, 160)">
+        <g class="coordinate">
+          <!-- horizontal length: 300 -->
+          <g class="horizontal">
+            <line x1="0" y1="150" x2="300" y2="150" stroke="black" />
+            <g class="markers_h">
+              <line x1="0" y1="150" x2="0" y2="160" stroke="black" />
+              <text x="-20" y="175" class="small">Mon 23</text>
+              <line x1="50" y1="150" x2="50" y2="160" stroke="black" />
+              <text x="30" y="175" class="small">Tue 24</text>
+              <line x1="100" y1="150" x2="100" y2="160" stroke="black" />
+              <text x="80" y="175" class="small">Wed 25</text>
+              <line x1="150" y1="150" x2="150" y2="160" stroke="black" />
+              <text x="130" y="175" class="small">Thu 26</text>
+              <line x1="200" y1="150" x2="200" y2="160" stroke="black" />
+              <text x="180" y="175" class="small">Fri 27</text>
+              <line x1="250" y1="150" x2="250" y2="160" stroke="black" />
+              <text x="230" y="175" class="small">Sat 28</text>
+            </g>
+          </g>
+          <!-- vertical length: 250 -->
+          <g class="vertical">
+            <line x1="0" y1="-100" x2="0" y2="150" stroke="black" />
+            <g class="markers_v">
+              <line x1="-10" y1="150" x2="0" y2="150" stroke="black" />
+              <line x1="-10" y1="125" x2="0" y2="125" stroke="black" />
+              <text x="-35" y="129" class="small">565</text>
+              <line x1="-10" y1="100" x2="0" y2="100" stroke="black" />
+              <text x="-35" y="104" class="small">570</text>
+              <line x1="-10" y1="75" x2="0" y2="75" stroke="black" />
+              <text x="-35" y="79" class="small">575</text>
+              <line x1="-10" y1="50" x2="0" y2="50" stroke="black" />
+              <text x="-35" y="54" class="small">580</text>
+              <line x1="-10" y1="25" x2="0" y2="25" stroke="black" />
+              <text x="-35" y="29" class="small">585</text>
+              <line x1="-10" y1="0" x2="0" y2="0" stroke="black" />
+              <text x="-35" y="4" class="small">590</text>
+              <line x1="-10" y1="-25" x2="0" y2="-25" stroke="black" />
+              <text x="-35" y="-21" class="small">595</text>
+              <line x1="-10" y1="-50" x2="0" y2="-50" stroke="black" />
+              <text x="-35" y="-46" class="small">600</text>
+              <line x1="-10" y1="-75" x2="0" y2="-75" stroke="black" />
+              <text x="-35" y="-71" class="small">605</text>
+              <line x1="-10" y1="-100" x2="0" y2="-100" stroke="black" />
+              <text x="-35" y="-96" class="small">610</text>
+            </g>
+            <g class="unit" transform="rotate(270, 0, 0)">
+              <text x="60" y="20" class="small">Price ($)</text>
+            </g>
+          </g>
+        </g>
+        <g class="line">
+          <!-- p1: 100 - (571.7 - 570) * 5 = 91.5 -->
+          <!-- p2: 150 - (560.28 - 560) * 5 = 148.6 -->
+          <path
+            d="M 0 91.5
+                           L 50 148.6
+                           L 100 -100
+                           L 150 -88.5
+                           L 200 -65
+                           L 250 35.1"
+            fill="none"
+            ;
+            stroke="#4781B4"
+            ;
+            stroke-width="1px"
+          />
+        </g>
+      </g>
+      <!-- Histogram  -->
+      <g id="histogram" transform="translate(0, 600)">
+        <!-- horizontal length: 450 -->
+        <!-- vertical max:-->
+        <g class="coordinate">
+          <line x1="100" y1="150" x2="550" y2="150" stroke="black" />
+          <g class="markers">
+            <line x1="100" y1="150" x2="100" y2="160" stroke="black" />
+            <line x1="110" y1="150" x2="110" y2="160" stroke="black" />
+            <text x="102" y="175">-4</text>
+            <line x1="165" y1="150" x2="165" y2="160" stroke="black" />
+            <text x="157" y="175">-3</text>
+            <line x1="220" y1="150" x2="220" y2="160" stroke="black" />
+            <text x="212" y="175">-2</text>
+            <line x1="275" y1="150" x2="275" y2="160" stroke="black" />
+            <text x="267" y="175">-1</text>
+            <line x1="330" y1="150" x2="330" y2="160" stroke="black" />
+            <text x="325" y="175">0</text>
+            <line x1="385" y1="150" x2="385" y2="160" stroke="black" />
+            <text x="380" y="175">1</text>
+            <line x1="440" y1="150" x2="440" y2="160" stroke="black" />
+            <text x="435" y="175">2</text>
+            <line x1="495" y1="150" x2="495" y2="160" stroke="black" />
+            <text x="490" y="175">3</text>
+            <line x1="550" y1="150" x2="550" y2="160" stroke="black" />
+          </g>
+        </g>
+        <g class="h_bars">
+          <rect width="55" height="18" x="165" y="132" fill="#4781B4" />
+          <text x="185" y="146" stroke="white" class="small">18</text>
+          <path
+            d="M 165 150
+                           L 165 132
+                           L 220 132
+                           L 220 150"
+            fill="none"
+            ;
+            stroke="white"
+            ;
+            stroke-width="2px"
+          />
+          <rect width="55" height="137" x="220" y="13" fill="#4781B4" />
+          <text x="238" y="27" stroke="white" class="small">137</text>
+          <path
+            d="M 220 150
+                           L 220 13
+                           L 275 13
+                           L 275 150"
+            fill="none"
+            ;
+            stroke="white"
+            ;
+            stroke-width="2px"
+          />
+          <rect width="55" height="343" x="275" y="-193" fill="#4781B4" />
+          <text x="293" y="-175" stroke="white" class="small">343</text>
+          <path
+            d="M 275 150
+                           L 275 -193
+                           L 330 -193
+                           L 330 150"
+            fill="none"
+            ;
+            stroke="white"
+            ;
+            stroke-width="2px"
+          />
+          <rect width="55" height="345" x="330" y="-195" fill="#4781B4" />
+          <text x="348" y="-178" stroke="white" class="small">345</text>
+          <path
+            d="M 330 150
+                           L 330 -195
+                           L 385 -195
+                           L 385 150"
+            fill="none"
+            ;
+            stroke="white"
+            ;
+            stroke-width="2px"
+          />
+          <rect width="55" height="142" x="385" y="8" fill="#4781B4" />
+          <text x="402" y="22" stroke="white" class="small">142</text>
+          <path
+            d="M 385 150
+                            L 385 8
+                            L 440 8
+                            L 440 150"
+            fill="none"
+            ;
+            stroke="white"
+            ;
+            stroke-width="2px"
+          />
+        </g>
+      </g>
+      <!-- Pie Chart  -->
+      <g id="pie_chart" transform="translate(800, 600)">
+        <g class="circle">
+          <!-- Outer  -->
+          <circle cx="150" cy="0" r="150" fill="#FFA500" />
+          <!-- stroke-dasharray: 2 * 75 * PI = 470, 470 * (20 / 150)  -->
+          <!-- <circle
+            cx="150"
+            cy="0"
+            r="75"
+            fill="none"
+            stroke="#tomato"
+            stroke-width="150"
+            stroke-dasharray="calc(470 * 0.133), 470"
+            transform="rotate(-90) translate(-150, 150)"
+          /> -->
+          <!-- Inner  -->
+          <circle cx="150" cy="0" r="40" fill="white" />
+        </g>
+        <g class="lines">
+          <line
+            x1="150"
+            y1="0"
+            x2="150"
+            y2="-150"
+            stroke="white"
+            stroke-width="2px"
+          />
+          <!-- p1:(150, -150) p2: (150 + 150 * sin (0.133 * 360), -150 * cos (0.133 * 360))-->
+          <line
+            x1="150"
+            y1="0"
+            x2="256.3"
+            y2="-102.6"
+            stroke="white"
+            stroke-width="2px"
+          />
+          <text x="167" y="-85" stroke="white" class="middle">Apples</text>
+          <line
+            x1="150"
+            y1="0"
+            x2="238.2"
+            y2="121.4"
+            stroke="white"
+            stroke-width="2px"
+          />
+          <text x="220" y="10" stroke="white" class="middle">Bananas</text>
+          <line
+            x1="150"
+            y1="0"
+            x2="0.8"
+            y2="15.7"
+            stroke="white"
+            stroke-width="2px"
+          />
+          <text x="85" y="90" stroke="white" class="middle">Cherries</text>
+          <line
+            x1="150"
+            y1="0"
+            x2="7.3"
+            y2="-46.4"
+            stroke="white"
+            stroke-width="2px"
+          />
+          <text x="18" y="-3" stroke="white" class="middle">Damsons</text>
+          <text x="50" y="-70" stroke="white" class="middle">Elderberries</text>
+        </g>
+      </g>
+    </svg>
+  </body>
+</html>

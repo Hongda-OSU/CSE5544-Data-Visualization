@@ -1,0 +1,78 @@
+
+<!-- CSE 5542 simple drawing using SVG only -->
+<!-- Han-Wei shen shen.94@osu.edu --> 
+
+<!DOCTYPE html>
+<html>
+	<head>
+	  <title>SVG - Path</title>
+
+	<!-- <script type="text/javascript" src="d3/d3.min.js"></script>  -->
+	  <script src="https://d3js.org/d3.v4.min.js"></script>
+	  
+	</head>
+	<body>
+	  <svg width="2000" height="1000">
+	    <g transform="translate(0, 50)" >
+	      	  <text x = "100" y="-10"> CSE 5544 Simple SVG drawing - part 1 </text>
+
+		  <path d="
+		  M 100 200 
+		  H 400
+		  v -200
+		  L 100 150
+		  Z
+
+		  M 100 330 
+		  H 400
+		  v 200
+		  L 100 350
+		  Z" 
+		  fill="red" stroke="black"/>
+
+		  <circle cx="100" cy="100" r="10" fill = "gold"/>
+		  <circle cx="100" cy="420" r="10" fill = "gold"/>
+		  
+		  <rect x="100" y="235" width = "15" height ="15" fill="blue"/>
+		  <rect x="100" y="280" width = "15" height ="15" fill="blue"/>
+
+		  
+		  <text x = "100" y = "270"> Love it!! </text>
+
+		  <line x1 = "100" x2 = "300" y1 = "305" y2="305" stroke="orange" stroke-width="10" />
+		  <rect x="10" y="0" width="500" height="530" stroke-width="3" stroke="grey" fill="none"/>
+
+	    </g>
+	    <g transform="translate(0, 50) rotate(180, 300, 300) translate(-500, 70)" >
+	      	  <text x = "100" y="-10"> CSE 5544 Simple SVG drawing - part 2 </text>
+
+		  <path d="
+		  M 100 200 
+		  H 400
+		  v -200
+		  L 100 150
+		  Z
+
+		  M 100 330 
+		  H 400
+		  v 200
+		  L 100 350
+		  Z" 
+		  fill="red" stroke="black"/>
+
+		  <circle cx="100" cy="100" r="10" fill = "green"/>
+		  <circle cx="100" cy="420" r="10" fill = "green"/>
+		  
+		  <rect x="100" y="235" width = "15" height ="15" fill="blue"/>
+		  <rect x="100" y="280" width = "15" height ="15" fill="blue"/>
+
+		  
+		  <text x = "100" y = "270"> Love being reversed!! </text>
+
+		  <line x1 = "100" x2 = "300" y1 = "305" y2="305" stroke="orange" stroke-width="10" />
+		  <rect x="10" y="0" width="500" height="530" stroke-width="3" stroke="grey" fill="none"/>
+
+	</g>	  
+		</svg>
+	</body>
+</html>
