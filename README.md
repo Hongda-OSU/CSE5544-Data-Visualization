@@ -1,4 +1,4 @@
 # CSE5544-Data-Visualization
-Some examples for my CSE5544 AU22 projects using D3 and Python libraries
-![Result](https://user-images.githubusercontent.com/67817916/196012942-e6b2f31d-def4-4c9d-b851-7853e5c0e991.png)
-![Lab2](https://user-images.githubusercontent.com/67817916/196012947-56a9928e-5f87-4a82-956d-92757e655ded.png)
+![result11](https://user-images.githubusercontent.com/67817916/205550697-acd7833f-07e5-4db6-8b84-c7428de689c5.gif)
+## Description
+- Energy data visualized using D3 and Pandas.
